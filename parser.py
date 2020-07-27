@@ -13,15 +13,15 @@ digit_training_list = []
 # number of spaces, hashtags, pluses, ratio of spaces vs. nonspaces
 for im, lab in zip(training_images_digit, training_labels_digit):
     new = Node.node(im.getPixels(), lab)
-    for i in new.image:
-        for j in new.image[i]:
-            if new.image[i][j] == '':
+    for i in range(len(new.image)):
+        for j in range(len(new.image[i])):
+            if new.image[i][j] == 0:
                 new.space += 1
-            elif new.image[i][j] == '+':
+            elif new.image[i][j] == 1:
                 new.plus += 1
             else:
                 new.hashtag += 1
-            new.ratio = new.space/(new.plus + new.hashtag)
+    new.ratio = new.space/(new.plus + new.hashtag)
     digit_training_list.append(new)
 
 for test in digit_training_list:
