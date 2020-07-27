@@ -102,7 +102,6 @@ def loadDataFile(filename, n, width, height):
     DATUM_WIDTH = width
     DATUM_HEIGHT = height
     fin = readlines(filename)
-    print(len(fin))
     fin.reverse()
     items = []
     for i in range(n):
