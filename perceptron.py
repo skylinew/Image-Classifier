@@ -2,6 +2,7 @@ from __future__ import print_function
 import samples
 import random
 import math
+import perceptronFunctions
 
 
 '''
@@ -10,90 +11,207 @@ Returns - list of initialized weights
 '''
 def initialize_weights(n, flag):
     if flag == 0:
-        MINWEIGHT = 0
-        MAXWEIGHT = 0
-        weights = [random.uniform(MINWEIGHT, MAXWEIGHT) for a in range(n)]
+        weights = [0 for a in range(n+1)]
     else:
         MINWEIGHT = -1/math.sqrt(n)
         MAXWEIGHT = 1/math.sqrt(n)
-        weights = [random.uniform(MINWEIGHT, MAXWEIGHT) for a in range(n)]
+        weights = [random.uniform(MINWEIGHT, MAXWEIGHT) for a in range(n+1)]
+
     return weights
 
 '''
-Function 1, counts total number of non-empty pixels
+To be called in compute_f_values() (the perceptron algorithm)
+
+flags: 1 for when fsum of a single featuresvector is < 0 and the datum's label is true
+      -1 for when fsum of a single featuresvector is > 0 and the datum's label is false
 '''
-def f1(datum, width, height):
-    count = 0
-    for i in range(width):
-        for j in range(height):
-            if datum.pixels[i][j] == 2:
-                count += 1
-    return count
+def update_weights(weights, featuresvector, flag):
+    if flag == 1:
+        weights[0] += 1
+        for w in range(1, len(weights)):
+            weights[w] += featuresvector[w]
+    elif flag == -1:
+        weights[0] -= 1
+        for w in range(1, len(weights)):
+            weights[w] -= featuresvector[w]
+
+
 
 
 '''
+First function to call when starting the perceptron algorithm, pass in featureslist to compute_f_values()
+
 Returns a list of features vectors (2d list)
 functions - a list of functions
 data - list of datum objects
+typeflag - 0 to indicate digit data, 1 for face
 
-***The order of features vectors follows the same order in the list of datum objects
+
+featureslist is a 2d list containing feature vectors
+each feature vector has the same index as its corresponding image in datalist
 '''
-def compute_features(functionslist, datalist):
+def compute_features(functionslist, datalist, typeflag):
     featureslist = []
 
     for data in datalist:
         featuresvector = []
+        featuresvector.append(1)
         for f in functionslist:
-            featuresvector.append(f(data))
+            featuresvector.append(f(data, typeflag))
         featureslist.append(featuresvector)
-
     return featureslist
 
 
 
 '''
-For determining the f-values
-Returns a list of all f-values, each f-value's index corresponds with the each datum's index in the datalist
+The main perceptron algorithm
+Updates weights until all fsums of a datum/image are congruent with their respective labels (ie y =  true or false)
 '''
-def compute_f_values(weights, featureslist):
-    for featuresvector in featureslist:
-        fsum = 0
-        for wfunction in weights:
-            if type(wfunction) is float:
-                fsum += wfunction*
+def compute_weights(weights, featureslist, labels):
+
+    f = 0
+    updateflag = False
+    printcount = 0
+
+    while True:
+
+        fsum = 0.0
+        for w in range(len(weights)):
+            if w == 0:
+                # weights[w] is a single features vector
+                fsum += weights[w]
+            else:
+                fsum += (weights[w] * featureslist[f][w])
+
+        # Check if fsum is accurate by comparing it with its corresponding label
+
+        if fsum < 0.0 and labels[f] is True:
+            updateflag = True
+            update_weights(weights, featureslist[f], 1)
+
+        elif fsum >= 0.0 and labels[f] is False:
+            updateflag = True
+            update_weights(weights, featureslist[f], -1)
+
+        print(weights)
+
+        # if you're at the last weight, reset counter f to -1
+        if f == (len(weights) - 1):
+            printcount += 1
+            print('-------- ' + 'End of Round ' + str(printcount) + '  ---------')
+
+            if updateflag is False:
+                # if no updates have been made after the entire pass, then the algorithm is finished
+                break
+            # otherwise, reset updateFlag
+            updateflag = False
+            f = -1
+
+        f += 1
+
+    return weights
 
 
 
 '''
-THE main perceptron algorithm, iterates through all f-values in flist and updates them as needed.
-When there are no more f-values to update, a list of all the final weights are returned
+Sampling function for digit data
+
+samplepercentage: a percentage of the entire training set
+digit: the digit we want to train on
+
+Digits are randomly picked so that half of the samples are y=true digits, and the other half are y=false digits.
+
+    eg: To train on the digit '4', half the digits chosen will be '4' and the other half will be non '4's
+
 '''
-def update_f_values(flist, labels):
+def sample_digits(digit, samplepercentage, datalist, labelslist):
+    size = int(math.ceil(len(datalist) * (samplepercentage / 100)))
+    digitcount = nondigitcount = 0
+    visited = []
+    sampledata = []
+    samplelabels = []
+    cap = int(math.ceil(size / 2))
+    cap2 = int(math.floor(size / 2))
+    i = 0
+
+    while i < (size - 1):
+
+        randomindex = random.randrange(len(datalist))
+
+        if labelslist[randomindex] == digit and randomindex not in visited and digitcount < cap:
+            sampledata.append(datalist[randomindex])
+            samplelabels.append(True)
+            visited.append(randomindex)
+
+            print(str(labels[randomindex]) + ' ~ ' + str(True) + ' ~ '+ str(randomindex))
+
+            digitcount += 1
+            i += 1
+
+        elif labelslist[randomindex] != digit and randomindex not in visited and nondigitcount < cap2:
+            sampledata.append(datalist[randomindex])
+            samplelabels.append(False)
+            visited.append(randomindex)
+
+            print(str(labels[randomindex]) + ' ~ ' + str(False) + ' ~ ' + str(randomindex))
+
+            nondigitcount += 1
+            i += 1
+
+
+    return sampledata, samplelabels, visited
+
+
+'''
+Need a sample faces function as well, since for example, it wouldn't be helpful for the algorithm 
+to train on 1 face and 100 non-faces
+'''
 
 
 
 
 
 if __name__ == "__main__":
-    # 451
-    nfaces = 451
 
-    phi_functions = []
-    faces = samples.loadDataFile('facedata/facedatatrain', nfaces, 60, 74)
-    print(str(len(faces)) + '----------------------------------------------nfaces')
-    exit()
-    labels = samples.loadLabelsFile('./data/facedata/facedatatrainlabels', nfaces)
-    weights = initialize_weights(nfaces, 0)
+    sample_percentage = 0.1
+    n_images = 5000
+    typeflag = 0
 
-    for i in range (nfaces):
-        print('----------------------------------  '  + str(labels[i]) + '  -----------------------------------')
-        for j in range(74):
-            for k in range(60):
-                if faces[i].pixels[k][j] != 2:
-                    print(' ', end="")
-                else:
-                    print('#',end="")
-            print()
+    images = samples.loadDataFile('digitdata/trainingimages', n_images, 28, 28)
+    labels = samples.loadLabelsFile('digitdata/traininglabels', n_images)
+
+    functions_list = [perceptronFunctions.plus_count, perceptronFunctions.hashtag_count]
+    images_sample, labels_sample, visited = sample_digits(4, sample_percentage, images, labels)
+
+    featureslist = compute_features(functions_list, images_sample, typeflag)
+    weights = initialize_weights(len(functions_list), 0)
+    final_weights = compute_weights(weights, featureslist, labels_sample)
+
+
+
+    print()
+    print('==============================================')
+    print()
+    print('Final Weights: ', end="")
+    print(final_weights)
+    print()
+    print('==============================================')
+
+    print()
+
+    # check the weights on the same sample set to make sure its legit
+    print('     Checking final weights...')
+    print()
+    for i in range(len(images_sample)):
+        fsum = final_weights[0]
+
+        for j in range(0, len(functions_list)):
+            func = functions_list[j]
+            feature = func(images_sample[i], 0)
+            fsum += (feature * final_weights[j+1])
+
+        print('Image label at line ' + str(visited[i]) + ': ' + str(labels_sample[i]) + ' --- ' + 'fsum: ' + str(fsum))
+
 
 
 
