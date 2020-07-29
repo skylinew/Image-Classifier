@@ -32,6 +32,43 @@ def main():
             countfeaturemap[1][j][count] = pnum/float(len(trainingdata[j]))
             countfeaturemap[2][j][count] = hshnum/float(len(trainingdata[j]))
 
+    validationdata = fileread.loaddigitdata(1000, 'digitdata/validationimages', 'digitdata/validationlabels')
+
+    validationprob = []
+    for it in range(10):
+        validationprob.append(0.0)
+
+    correctcount = 0
+    totalcount = 0
+    out = 1.0
+    for val in range(len(validationdata)):
+        for i in range(10):
+            out = fileread.digitprob(trainingdata, i)
+            for feat in range(3):
+                if feat == 0:
+                    lpar = validationdata[val].space
+                elif feat == 1:
+                    lpar = validationdata[val].plus
+                else:
+                    lpar = validationdata[val].hashtag
+                out *= countfeaturemap[feat][i][lpar]
+            validationprob[i] = out
+
+        maxp = 0.0
+        labelv = -1
+        for maxv in range(len(validationprob)):
+            if validationprob[maxv] > maxp:
+                maxp = validationprob[maxv]
+                labelv = maxv
+        if validationdata[val].label == labelv:
+            correctcount += 1
+        totalcount += 1
+        print("Actual label: " + str(validationdata[val].label) + " Predicted label: " + str(labelv) + " Probability: " + str(maxp))
+    print("Accuracy: " + str(correctcount/float(totalcount)))
+
+
+    #print("Label: " + str(labelv) + " with probability: " + str(maxp))
+
     #sumcheck = 0
     #for m in range(len(countfeaturemap[1][1])):
     #    sumcheck += countfeaturemap[0][9][m]
