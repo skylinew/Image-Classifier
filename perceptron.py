@@ -2,7 +2,9 @@ from __future__ import print_function
 import samples
 import random
 import math
-import perceptronFunctions
+import perceptronFunctions as pf
+import time
+
 
 import matplotlib
 matplotlib.use('TkAgg')
@@ -77,19 +79,26 @@ Updates weights until all fsums of a datum/image are congruent with their respec
 '''
 def compute_weights(weights, featureslist, labels):
 
+    start = time.time()
+
+
     f = 0
     updateflag = False
     printcount = 0
 
     while True:
+                                    # number indicates seconds to timeout at
+        if time.time() >= (start + 240):
+            break
 
         fsum = 0.0
         for w in range(len(weights)):
             if w == 0:
                 # weights[w] is a single features vector
-                print(weights[w])
                 fsum += weights[w]
             else:
+                #print(len(featureslist))
+                #print(len(featureslist[f][w]))
                 fsum += (weights[w] * featureslist[f][w])
 
         # Check if fsum is accurate by comparing it with its corresponding label
@@ -140,6 +149,7 @@ Digits are randomly picked so that half of the samples are y=true digits, and th
 '''
 def sample_digits(digit, samplepercentage, datalist, labelslist):
     size = int(math.ceil(len(datalist) * (float(sample_percentage) / 100)))
+    print(size)
     digitcount = nondigitcount = 0
     visited = []
     sampledata = []
@@ -198,14 +208,17 @@ def plotpoints(featureslist, labels_sample):
 
 if __name__ == "__main__":
 
-    sample_percentage = .1
+    # Sample percentage being too low can incur an error, make sure to check how many image datums are being sampled
+    # The closer sample percentage is to 100, the more likely it is that sample_digits() will run infinitely
+    #   adjust later on so that it doesn't run infinitely
+    sample_percentage = .5
     n_images = 5000
     typeflag = 0
 
     images = samples.loadDataFile('digitdata/trainingimages', n_images, 28, 28)
     labels = samples.loadLabelsFile('digitdata/traininglabels', n_images)
 
-    functions_list = [perceptronFunctions.plus_count, perceptronFunctions.hashtag_count]
+    functions_list = [pf.avg_horizontal_line_length, pf.variance_horizontal_line_length]
     images_sample, labels_sample, visited = sample_digits(4, sample_percentage, images, labels)
 
     featureslist = compute_features(functions_list, images_sample, typeflag)
@@ -243,6 +256,9 @@ if __name__ == "__main__":
     # check the weights on the same sample set to make sure its legit
     print('     Checking final weights...')
     print()
+
+    accuracylist = []
+
     for i in range(len(images_sample)):
         fsum = final_weights[0]
 
@@ -252,7 +268,22 @@ if __name__ == "__main__":
             fsum += (feature * final_weights[j+1])
 
         print('Image label at line ' + str(visited[i] + 1) + ': ' + str(labels_sample[i]) + ' --- ' + 'fsum: ' + str(fsum))
+        if fsum < float(0) and labels_sample[i] is False:
+            accuracylist.append(True)
+        elif fsum >= float(0) and labels_sample[i] is True:
+            accuracylist.append(True)
+        else:
+            accuracylist.append(False)
 
+    accuracy_count = 0
+    for i in range(len(accuracylist)):
+        if accuracylist[i]:
+            accuracy_count += 1
+
+
+    print()
+    accuracy = accuracy_count * 100 / len(accuracylist)
+    print('----- Accuracy: ' + str(accuracy) + '%' + ' ------')
 
 
 
