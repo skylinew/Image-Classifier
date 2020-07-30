@@ -88,7 +88,7 @@ def compute_weights(weights, featureslist, labels):
 
     while True:
                                     # number indicates seconds to timeout at
-        if time.time() >= (start + 240):
+        if time.time() >= (start + 30):
             break
 
         fsum = 0.0
@@ -219,7 +219,7 @@ if __name__ == "__main__":
     labels = samples.loadLabelsFile('digitdata/traininglabels', n_images)
 
     functions_list = [pf.avg_horizontal_line_length, pf.variance_horizontal_line_length]
-    images_sample, labels_sample, visited = sample_digits(4, sample_percentage, images, labels)
+    images_sample, labels_sample, visited = sample_digits(1, sample_percentage, images, labels)
 
     featureslist = compute_features(functions_list, images_sample, typeflag)
     weights = initialize_weights(len(functions_list), 0)

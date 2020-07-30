@@ -132,6 +132,14 @@ def edge_ratio(datum, typeflag):
 '''
 
 
+
+
+
+'''
+        For digit '1'
+
+        Finds the variance in non-blank horizontal line lengths
+'''
 # For 1's, if the average horizontal length of consecutive non-blank symbols is <= 4, return 1, else return -1
 def avg_horizontal_line_length(datum, typeflag):
     if typeflag == 0:
@@ -158,7 +166,11 @@ def avg_horizontal_line_length(datum, typeflag):
     return avg
 
 
+'''
+        For digit '1'
 
+        Finds the variance in non-blank horizontal line lengths
+'''
 def variance_horizontal_line_length(datum, typeflag):
     if typeflag == 0:
         width = height = 28
