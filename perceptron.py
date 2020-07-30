@@ -4,6 +4,14 @@ import random
 import math
 import perceptronFunctions
 
+import matplotlib
+matplotlib.use('TkAgg')
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+from matplotlib import style
+
+
+
 
 '''
 Flag - 0 indicates weights starting at 0, otherwise initialize weights randomly from -1/sqrt(n) to 1/sqrt(n)
@@ -79,24 +87,30 @@ def compute_weights(weights, featureslist, labels):
         for w in range(len(weights)):
             if w == 0:
                 # weights[w] is a single features vector
+                print(weights[w])
                 fsum += weights[w]
             else:
                 fsum += (weights[w] * featureslist[f][w])
 
         # Check if fsum is accurate by comparing it with its corresponding label
 
-        if fsum < 0.0 and labels[f] is True:
+        print('fsum, iter: ' + str(f) + ' ~~~~~~~~~~ ' + str(fsum) +' ~~~~label ~~~ ' + str(labels_sample[f]))
+
+
+        if fsum < 0 and labels[f] is True:
+            print('updating fsum: ' + str(fsum) +  ' < 0 since its true but actually false')
             updateflag = True
             update_weights(weights, featureslist[f], 1)
 
-        elif fsum >= 0.0 and labels[f] is False:
+        elif fsum >= 0 and labels[f] is False:
+            print('updating fsum: ' + str(fsum) +  ' >= 0 since its false but actually true')
             updateflag = True
             update_weights(weights, featureslist[f], -1)
 
         print(weights)
 
         # if you're at the last weight, reset counter f to -1
-        if f == (len(weights) - 1):
+        if f == (len(featureslist)-1):
             printcount += 1
             print('-------- ' + 'End of Round ' + str(printcount) + '  ---------')
 
@@ -125,7 +139,7 @@ Digits are randomly picked so that half of the samples are y=true digits, and th
 
 '''
 def sample_digits(digit, samplepercentage, datalist, labelslist):
-    size = int(math.ceil(len(datalist) * (samplepercentage / 100)))
+    size = int(math.ceil(len(datalist) * (float(sample_percentage) / 100)))
     digitcount = nondigitcount = 0
     visited = []
     sampledata = []
@@ -136,14 +150,14 @@ def sample_digits(digit, samplepercentage, datalist, labelslist):
 
     while i < (size - 1):
 
-        randomindex = random.randrange(len(datalist))
+        randomindex = random.randrange(0, len(datalist))
 
         if labelslist[randomindex] == digit and randomindex not in visited and digitcount < cap:
             sampledata.append(datalist[randomindex])
             samplelabels.append(True)
             visited.append(randomindex)
 
-            print(str(labels[randomindex]) + ' ~ ' + str(True) + ' ~ '+ str(randomindex))
+            print(str(labels[randomindex]) + ' ~ ' + str(True) + ' ~ '+ str(randomindex + 1))
 
             digitcount += 1
             i += 1
@@ -153,7 +167,7 @@ def sample_digits(digit, samplepercentage, datalist, labelslist):
             samplelabels.append(False)
             visited.append(randomindex)
 
-            print(str(labels[randomindex]) + ' ~ ' + str(False) + ' ~ ' + str(randomindex))
+            print(str(labels[randomindex]) + ' ~ ' + str(False) + ' ~ ' + str(randomindex + 1))
 
             nondigitcount += 1
             i += 1
@@ -171,9 +185,20 @@ to train on 1 face and 100 non-faces
 
 
 
+def plotpoints(featureslist, labels_sample):
+
+
+    for i in range(len(featureslist)):
+        if labels_sample[i]:
+            plt.plot(featureslist[i][1], featureslist[i][2], 'b^')
+        else:
+            plt.plot(featureslist[i][1], featureslist[i][2], 'rx')
+
+
+
 if __name__ == "__main__":
 
-    sample_percentage = 0.1
+    sample_percentage = .1
     n_images = 5000
     typeflag = 0
 
@@ -185,10 +210,26 @@ if __name__ == "__main__":
 
     featureslist = compute_features(functions_list, images_sample, typeflag)
     weights = initialize_weights(len(functions_list), 0)
+
+
+
+
+    '''
+            ANIMATE GRAPH
+    '''
+
+    #plotpoints(featureslist, labels_sample)
+    #plt.show()
+
+
+
+    '''
+            Run Perceptron
+    '''
     final_weights = compute_weights(weights, featureslist, labels_sample)
 
 
-
+    print()
     print()
     print('==============================================')
     print()
@@ -210,7 +251,7 @@ if __name__ == "__main__":
             feature = func(images_sample[i], 0)
             fsum += (feature * final_weights[j+1])
 
-        print('Image label at line ' + str(visited[i]) + ': ' + str(labels_sample[i]) + ' --- ' + 'fsum: ' + str(fsum))
+        print('Image label at line ' + str(visited[i] + 1) + ': ' + str(labels_sample[i]) + ' --- ' + 'fsum: ' + str(fsum))
 
 
 
