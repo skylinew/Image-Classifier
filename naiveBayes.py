@@ -1,10 +1,51 @@
 import fileread
-
+import Featuretable
 
 def main():
     # trainingdata is a list of node objects
     trainingdata = fileread.loaddigittraining()
 
+    features = Featuretable.FeatureTable(10, 28, 28)
+    features.filltable(trainingdata)
+
+    validationdata = fileread.loaddigitdata(1000, 'digitdata/validationimages', 'digitdata/validationlabels')
+    validationprob = []
+    results = []
+    for z in range(10):
+        validationprob.append(0.0)
+        results.append(0.0)
+
+    correctcount = 0
+    totalcount = 0
+    probability = 1
+    for i in range(len(validationdata)):
+        for q in range(10):
+            probability = fileread.digitprob(trainingdata, q)
+            for j in range(len(validationdata[i].image)):
+                for k in range(len(validationdata[i].image[j])):
+                    if validationdata[i].image[j][k] == 0:
+                        probability *= features.table[q][j][k][0]
+                    elif validationdata[i].image[j][k] == 1:
+                        probability *= features.table[q][j][k][1]
+                    else:
+                        probability *= features.table[q][j][k][2]
+            validationprob[q] = probability
+
+        maxp = 0.0
+        labelv = -1
+        for maxv in range(len(validationprob)):
+            if validationprob[maxv] > maxp:
+                maxp = validationprob[maxv]
+                labelv = maxv
+        if validationdata[i].label == labelv:
+            correctcount += 1
+        totalcount += 1
+        print("Actual label: " + str(validationdata[i].label) + " Predicted label: " + str(
+            labelv) + " Probability: " + str(maxp))
+    print("Accuracy: " + str(correctcount / float(totalcount)))
+
+
+'''
     spnum = 0
     pnum = 0
     hshnum = 0
@@ -74,7 +115,7 @@ def main():
     #    sumcheck += countfeaturemap[0][9][m]
     #    print("Probability of " + str(m) + " in number " + str(n) + " is: " + str(countfeaturemap[1][n][m]))
     #print("Should be 1: " + str(sumcheck))
-
+'''
 
 if __name__ == "__main__":
     main()
