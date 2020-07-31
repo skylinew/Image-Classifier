@@ -19,9 +19,9 @@ def main(cats):
             results.append(0.0)
     else:
         trainingdata = fileread.loadtraining(451, 'facedata/facedatatrain', 'facedata/facedatatrainlabels', 60, 70, cats)
-        features = Featuretable.FeatureTable(cats, 70, 60)
+        features = Featuretable.FeatureTable(cats, 60, 70)
         features.filltable(trainingdata, cats)
-        validationdata = fileread.loadtest(1000, 'facedata/facedatavalidation', 'facedata/facedatavalidationlabels', 60, 70)
+        validationdata = fileread.loadtest(300, 'facedata/facedatavalidation', 'facedata/facedatavalidationlabels', 60, 70)
         validationprob = []
         results = []
         for z in range(cats):
@@ -32,7 +32,11 @@ def main(cats):
     totalcount = 0
     for i in range(len(validationdata)):
         for q in range(cats):
-            probability = fileread.digitprob(trainingdata, q)
+            if cats == 10:
+                probability = fileread.digitprob(trainingdata, q)
+            else:
+                probability = fileread.faceprob(trainingdata, q)
+                #print("Probability: " + str(probability))
             for j in range(len(validationdata[i].image)):
                 for k in range(len(validationdata[i].image[j])):
                     if validationdata[i].image[j][k] == 0:
@@ -42,6 +46,7 @@ def main(cats):
                     else:
                         probability *= features.table[q][j][k][2]
             validationprob[q] = probability
+
 
         maxp = 0.0
         labelv = -1
@@ -130,4 +135,4 @@ def main(cats):
 '''
 
 if __name__ == "__main__":
-    main(2)
+    main(10)

@@ -15,9 +15,6 @@ class FeatureTable:
                         self.table[i][z][t].append(0.0)
 
     def filltable(self, trainingdata, cats):
-        print("Cats range: " + str(cats))
-        print("trainingdata length: " + str(len(trainingdata)))
-        print("self.table[i] Length: " + str(len(self.table[0])))
         for i in range(cats):
             for z in range(len(trainingdata[i])):
                 for j in range(len(self.table[i])):
