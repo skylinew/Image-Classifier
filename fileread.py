@@ -2,13 +2,13 @@ import samples
 import Node
 
 
-def loaddigittraining():
+def loadtraining(n, imageloc, labelloc, x, y, cats):
 
-    training_images_digit = samples.loadDataFile('digitdata/trainingimages', 5000, 28, 28)
-    training_labels_digit = samples.loadLabelsFile('digitdata/traininglabels', 5000)
+    training_images_digit = samples.loadDataFile(imageloc, n, x, y)
+    training_labels_digit = samples.loadLabelsFile(labelloc, n)
 
     digit_training_list = []
-    for z in range(10):
+    for z in range(cats):
         digit_training_list.append([])
 
     # Creates a list where each element contains the list of lists of pixels, label
@@ -16,23 +16,23 @@ def loaddigittraining():
     # Parsing DIGITS
     for im, lab in zip(training_images_digit, training_labels_digit):
         new = Node.node(im.getPixels(), lab)
-        for i in range(len(new.image)):
-            for j in range(len(new.image[i])):
-                if new.image[i][j] == 0:
-                    new.space += 1
-                elif new.image[i][j] == 1:
-                    new.plus += 1
-                else:
-                    new.hashtag += 1
-        new.ratio = new.space/float(new.plus + new.hashtag)
+        #for i in range(len(new.image)):
+            #for j in range(len(new.image[i])):
+            #    if new.image[i][j] == 0:
+            #        new.space += 1
+            #    elif new.image[i][j] == 1:
+            #        new.plus += 1
+            #    else:
+            #        new.hashtag += 1
+        #new.ratio = new.space/float(new.plus + new.hashtag)
         digit_training_list[new.label].append(new)
     return digit_training_list
 
 
-def loaddigitdata(size, imageloc, labelloc):
+def loadtest(n, imageloc, labelloc, x, y):
 
-    training_images_digit = samples.loadDataFile(imageloc, size, 28, 28)
-    training_labels_digit = samples.loadLabelsFile(labelloc, size)
+    training_images_digit = samples.loadDataFile(imageloc, n, x, y)
+    training_labels_digit = samples.loadLabelsFile(labelloc, n)
 
     digit_training_list = []
 
@@ -41,15 +41,15 @@ def loaddigitdata(size, imageloc, labelloc):
     # Parsing DIGITS
     for im, lab in zip(training_images_digit, training_labels_digit):
         new = Node.node(im.getPixels(), lab)
-        for i in range(len(new.image)):
-            for j in range(len(new.image[i])):
-                if new.image[i][j] == 0:
-                    new.space += 1
-                elif new.image[i][j] == 1:
-                    new.plus += 1
-                else:
-                    new.hashtag += 1
-        new.ratio = new.space/float(new.plus + new.hashtag)
+        #for i in range(len(new.image)):
+        #    for j in range(len(new.image[i])):
+        #        if new.image[i][j] == 0:
+        #            new.space += 1
+        #        elif new.image[i][j] == 1:
+        #            new.plus += 1
+        #        else:
+        #            new.hashtag += 1
+        #new.ratio = new.space/float(new.plus + new.hashtag)
         digit_training_list.append(new)
     return digit_training_list
 
@@ -57,6 +57,9 @@ def loaddigitdata(size, imageloc, labelloc):
 
 def digitprob(training_list, number):
     return len(training_list[number])/float(5000)
+
+def faceprob(training_list, face):
+    return len(training_list[face])/float(451)
 
 
 '''

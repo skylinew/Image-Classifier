@@ -1,25 +1,37 @@
 import fileread
 import Featuretable
 
-def main():
+ # cats is number of categories
+ # 10 for digits
+ # 2 for faces
+
+def main(cats):
     # trainingdata is a list of node objects
-    trainingdata = fileread.loaddigittraining()
-
-    features = Featuretable.FeatureTable(10, 28, 28)
-    features.filltable(trainingdata)
-
-    validationdata = fileread.loaddigitdata(1000, 'digitdata/validationimages', 'digitdata/validationlabels')
-    validationprob = []
-    results = []
-    for z in range(10):
-        validationprob.append(0.0)
-        results.append(0.0)
+    if cats == 10:
+        trainingdata = fileread.loadtraining(5000, 'digitdata/trainingimages', 'digitdata/traininglabels', 28, 28, cats)
+        features = Featuretable.FeatureTable(cats, 28, 28)
+        features.filltable(trainingdata, cats)
+        validationdata = fileread.loadtest(1000, 'digitdata/validationimages', 'digitdata/validationlabels', 28, 28)
+        validationprob = []
+        results = []
+        for z in range(cats):
+            validationprob.append(0.0)
+            results.append(0.0)
+    else:
+        trainingdata = fileread.loadtraining(451, 'facedata/facedatatrain', 'facedata/facedatatrainlabels', 60, 70, cats)
+        features = Featuretable.FeatureTable(cats, 70, 60)
+        features.filltable(trainingdata, cats)
+        validationdata = fileread.loadtest(1000, 'facedata/facedatavalidation', 'facedata/facedatavalidationlabels', 60, 70)
+        validationprob = []
+        results = []
+        for z in range(cats):
+            validationprob.append(0.0)
+            results.append(0.0)
 
     correctcount = 0
     totalcount = 0
-    probability = 1
     for i in range(len(validationdata)):
-        for q in range(10):
+        for q in range(cats):
             probability = fileread.digitprob(trainingdata, q)
             for j in range(len(validationdata[i].image)):
                 for k in range(len(validationdata[i].image[j])):
@@ -118,4 +130,4 @@ def main():
 '''
 
 if __name__ == "__main__":
-    main()
+    main(2)
