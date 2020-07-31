@@ -1,5 +1,6 @@
 import fileread
 import Featuretable
+import math
 
  # cats is number of categories
  # 10 for digits
@@ -33,18 +34,26 @@ def main(cats):
     for i in range(len(validationdata)):
         for q in range(cats):
             if cats == 10:
-                probability = fileread.digitprob(trainingdata, q)
+                probability = math.log(fileread.digitprob(trainingdata, q))
             else:
-                probability = fileread.faceprob(trainingdata, q)
-                #print("Probability: " + str(probability))
+                probability = math.log(fileread.faceprob(trainingdata, q))
             for j in range(len(validationdata[i].image)):
                 for k in range(len(validationdata[i].image[j])):
                     if validationdata[i].image[j][k] == 0:
-                        probability *= features.table[q][j][k][0]
+                        if features.table[q][j][k][0] == 0:
+                            continue
+                        else:
+                            probability += math.log(features.table[q][j][k][0])
                     elif validationdata[i].image[j][k] == 1:
-                        probability *= features.table[q][j][k][1]
+                        if features.table[q][j][k][1] == 0:
+                            continue
+                        else:
+                            probability += math.log(features.table[q][j][k][1])
                     else:
-                        probability *= features.table[q][j][k][2]
+                        if features.table[q][j][k][2] == 0:
+                            continue
+                        else:
+                            probability += math.log(features.table[q][j][k][2])
             validationprob[q] = probability
 
 
@@ -135,4 +144,4 @@ def main(cats):
 '''
 
 if __name__ == "__main__":
-    main(10)
+    main(2)

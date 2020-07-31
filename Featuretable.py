@@ -20,11 +20,11 @@ class FeatureTable:
                 for j in range(len(self.table[i])):
                     for k in range(len(self.table[i][j])):
                         if trainingdata[i][z].image[j][k] == 0:
-                            self.table[i][j][k][0] += (1/float(len(trainingdata[i])))
+                            self.table[i][j][k][0] += ((1 + 5)/(float(len(trainingdata[i])) + 5))
                         elif trainingdata[i][z].image[j][k] == 1:
-                            self.table[i][j][k][1] += (1/float(len(trainingdata[i])))
+                            self.table[i][j][k][1] += ((1 + 5)/(float(len(trainingdata[i])) + 5))
                         else:
-                            self.table[i][j][k][2] += (1/float(len(trainingdata[i])))
+                            self.table[i][j][k][2] += ((1 + 5)/(float(len(trainingdata[i])) + 5))
 
     def printtable(self, cats):
         for i in range(cats):
