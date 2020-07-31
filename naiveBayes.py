@@ -12,7 +12,7 @@ def main(cats):
         trainingdata = fileread.loadtraining(5000, 'digitdata/trainingimages', 'digitdata/traininglabels', 28, 28, cats)
         features = Featuretable.FeatureTable(cats, 28, 28)
         features.filltable(trainingdata, cats)
-        validationdata = fileread.loadtest(1000, 'digitdata/validationimages', 'digitdata/validationlabels', 28, 28)
+        validationdata = fileread.loadtest(1000, 'digitdata/testimages', 'digitdata/testlabels', 28, 28)
         validationprob = []
         results = []
         for z in range(cats):
@@ -22,7 +22,7 @@ def main(cats):
         trainingdata = fileread.loadtraining(451, 'facedata/facedatatrain', 'facedata/facedatatrainlabels', 60, 70, cats)
         features = Featuretable.FeatureTable(cats, 60, 70)
         features.filltable(trainingdata, cats)
-        validationdata = fileread.loadtest(300, 'facedata/facedatavalidation', 'facedata/facedatavalidationlabels', 60, 70)
+        validationdata = fileread.loadtest(150, 'facedata/facedatatest', 'facedata/facedatatestlabels', 60, 70)
         validationprob = []
         results = []
         for z in range(cats):
