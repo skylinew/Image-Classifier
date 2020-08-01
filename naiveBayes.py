@@ -12,6 +12,7 @@ def main(cats):
         trainingdata = fileread.loadtraining(5000, 'digitdata/trainingimages', 'digitdata/traininglabels', 28, 28, cats)
         features = Featuretable.FeatureTable(cats, 28, 28)
         features.filltable(trainingdata, cats)
+        features.printtable(cats)
         validationdata = fileread.loadtest(1000, 'digitdata/testimages', 'digitdata/testlabels', 28, 28)
         validationprob = []
         results = []
@@ -144,4 +145,4 @@ def main(cats):
 '''
 
 if __name__ == "__main__":
-    main(2)
+    main(10)
