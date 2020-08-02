@@ -4,8 +4,6 @@ import random
 import math
 import perceptronFunctions as pf
 import time
-
-
 import matplotlib
 matplotlib.use('TkAgg')
 import matplotlib.pyplot as plt
@@ -16,12 +14,14 @@ from matplotlib import style
 
 
 '''
-Flag - 0 indicates weights starting at 0, otherwise initialize weights randomly from -1/sqrt(n) to 1/sqrt(n)
-Returns - list of initialized weights
+        Flag - 0 indicates weights starting at 0, otherwise initialize weights randomly from -1/sqrt(n) to 1/sqrt(n)
+        Returns - list of initialized weights
 '''
+
+
 def initialize_weights(n, flag):
     if flag == 0:
-        weights = [0 for a in range(n+1)]
+        weights = [float(0) for a in range(n+1)]
     else:
         MINWEIGHT = -1/math.sqrt(n)
         MAXWEIGHT = 1/math.sqrt(n)
@@ -35,31 +35,26 @@ To be called in compute_f_values() (the perceptron algorithm)
 flags: 1 for when fsum of a single featuresvector is < 0 and the datum's label is true
       -1 for when fsum of a single featuresvector is > 0 and the datum's label is false
 '''
+
+
 def update_weights(weights, featuresvector, flag):
     if flag == 1:
-        weights[0] += 1
+        weights[0] += float(1)
         for w in range(1, len(weights)):
-            weights[w] += featuresvector[w]
+            weights[w] += float(featuresvector[w])
     elif flag == -1:
-        weights[0] -= 1
+        weights[0] -= float(1)
         for w in range(1, len(weights)):
-            weights[w] -= featuresvector[w]
+            weights[w] -= float(featuresvector[w])
 
 
 
 
 '''
-First function to call when starting the perceptron algorithm, pass in featureslist to compute_f_values()
-
-Returns a list of features vectors (2d list)
-functions - a list of functions
-data - list of datum objects
-typeflag - 0 to indicate digit data, 1 for face
-
-
-featureslist is a 2d list containing feature vectors
-each feature vector has the same index as its corresponding image in datalist
+        For custom features (will probably remove this function)
 '''
+
+
 def compute_features(functionslist, datalist, typeflag):
     featureslist = []
 
@@ -71,57 +66,70 @@ def compute_features(functionslist, datalist, typeflag):
         featureslist.append(featuresvector)
     return featureslist
 
+'''
+        Each feature is just the pixel's value, so a digit will have 28*28 + 1 features (the +1 is value of 1 to multiply with Weight0)
+'''
+
+
+def compute_features2(datalist):
+
+    featureslist = []
+
+    for data in datalist:
+        featuresvector = []
+        featuresvector.append(1)
+        for height in range(len(data.pixels)):
+            for width in range(len(data.pixels[height])):
+                featuresvector.append(data.pixels[height][width])
+        featureslist.append(featuresvector)
+    return featureslist
 
 
 '''
 The main perceptron algorithm
 Updates weights until all fsums of a datum/image are congruent with their respective labels (ie y =  true or false)
 '''
+
+
 def compute_weights(weights, featureslist, labels):
 
     start = time.time()
-
-
-    f = 0
     updateflag = False
     printcount = 0
 
+    f = 0
     while True:
                                     # number indicates seconds to timeout at
-        if time.time() >= (start + 30):
+        if time.time() >= (start + 5):
             break
 
-        fsum = 0.0
+        fsum = float(0)
         for w in range(len(weights)):
-            if w == 0:
-                # weights[w] is a single features vector
-                fsum += weights[w]
-            else:
-                #print(len(featureslist))
-                #print(len(featureslist[f][w]))
-                fsum += (weights[w] * featureslist[f][w])
+
+            #print(fsum)
+            fsum += (float(weights[w]) * (1.0 * float(featureslist[f][w])))
 
         # Check if fsum is accurate by comparing it with its corresponding label
 
-        print('fsum, iter: ' + str(f) + ' ~~~~~~~~~~ ' + str(fsum) +' ~~~~label ~~~ ' + str(labels_sample[f]))
+        #print('fsum, iter: ' + str(f) + ' ~~~~~~~~~~ ' + str(fsum) +' ~~~~label ~~~ ')
 
 
-        if fsum < 0 and labels[f] is True:
-            print('updating fsum: ' + str(fsum) +  ' < 0 since its true but actually false')
+        if fsum < float(0) and labels[f] is True:
+            #print('updating fsum: ' + str(fsum) +  ' < 0 since its true but actually false')
             updateflag = True
             update_weights(weights, featureslist[f], 1)
 
-        elif fsum >= 0 and labels[f] is False:
-            print('updating fsum: ' + str(fsum) +  ' >= 0 since its false but actually true')
+        elif fsum >= float(0) and labels[f] is False:
+            #print('updating fsum: ' + str(fsum) +  ' >= 0 since its false but actually true')
             updateflag = True
             update_weights(weights, featureslist[f], -1)
 
-        print(weights)
+        #print(weights)
 
         # if you're at the last weight, reset counter f to -1
         if f == (len(featureslist)-1):
             printcount += 1
-            print('-------- ' + 'End of Round ' + str(printcount) + '  ---------')
+            #print('-------- ' + 'End of Round ' + str(printcount) + '  ---------')
 
             if updateflag is False:
                 # if no updates have been made after the entire pass, then the algorithm is finished
@@ -135,7 +143,6 @@ def compute_weights(weights, featureslist, labels):
     return weights
 
 
-
 '''
 Sampling function for digit data
 
@@ -147,16 +154,43 @@ Digits are randomly picked so that half of the samples are y=true digits, and th
     eg: To train on the digit '4', half the digits chosen will be '4' and the other half will be non '4's
 
 '''
-def sample_digits(digit, samplepercentage, datalist, labelslist):
+
+
+def sample_digits(digit, sample_percentage, datalist, labelslist):
+
+    start = time.time()
+
     size = int(math.ceil(len(datalist) * (float(sample_percentage) / 100)))
-    print(size)
+
     digitcount = nondigitcount = 0
     visited = []
     sampledata = []
     samplelabels = []
     cap = int(math.ceil(size / 2))
     cap2 = int(math.floor(size / 2))
+
+
+    if sample_percentage == 100:
+
+        for v in range(len(labelslist)):
+            visited.append(v+1)
+
+            if labelslist[v] == digit:
+                samplelabels.append(True)
+            else:
+                samplelabels.append(False)
+
+
+        joined_lists = list(zip(datalist, samplelabels, visited))
+        random.shuffle(joined_lists)
+        sampledata, samplelabels, visited = zip(*joined_lists)
+
+        return sampledata, samplelabels, visited
+
     i = 0
+    if 430 < cap:
+        cap = 430
+        cap2 = size - 430
 
     while i < (size - 1):
 
@@ -167,7 +201,7 @@ def sample_digits(digit, samplepercentage, datalist, labelslist):
             samplelabels.append(True)
             visited.append(randomindex)
 
-            print(str(labels[randomindex]) + ' ~ ' + str(True) + ' ~ '+ str(randomindex + 1))
+            # print(str(labels[randomindex]) + ' ~ ' + str(True) + ' ~ '+ str(randomindex + 1))
 
             digitcount += 1
             i += 1
@@ -177,26 +211,70 @@ def sample_digits(digit, samplepercentage, datalist, labelslist):
             samplelabels.append(False)
             visited.append(randomindex)
 
-            print(str(labels[randomindex]) + ' ~ ' + str(False) + ' ~ ' + str(randomindex + 1))
+            #print(str(labels[randomindex]) + ' ~ ' + str(False) + ' ~ ' + str(randomindex + 1))
 
             nondigitcount += 1
             i += 1
 
-
+    #print('sampleSize ' + str(sample_percentage) + ' time elapsed: ' + str(time.time() - start) + ' seconds')
     return sampledata, samplelabels, visited
 
 
+
 '''
-Need a sample faces function as well, since for example, it wouldn't be helpful for the algorithm 
-to train on 1 face and 100 non-faces
+            If digit = -1, then validate on faces
+            
 '''
 
 
 
+def validate_weights(digit, final_weights):
+
+    if digit >= 0:
+        images = samples.loadDataFile('digitdata/validationimages', 1000, 28, 28)
+        labels = samples.loadLabelsFile('digitdata/validationlabels', 1000)
+        features_list = compute_features2(images)
+    else:
+        images = samples.loadDataFile('facedata/facedatavalidation', 301, 60, 70)
+        labels = samples.loadLabelsFile('facedata/facedatavalidationlabels', 301)
+        features_list = compute_features2(images)
+
+    accuracylist = []
+
+    for i in range(len(images)):
+        fsum = 0
+        # for each already computed feature in the current image
+        for j in range(len(features_list[i])):
+            fsum += (final_weights[j] * features_list[i][j])
+        # If working with digits
+        if digit >= 0:
+            # Print(str(labels[i]) + ' --- ' + 'fsum: ' + str(fsum))
+
+            if fsum < float(0) and labels[i] != digit:
+                accuracylist.append(True)
+            elif fsum >= float(0) and labels[i] == digit:
+                accuracylist.append(True)
+            else:
+                accuracylist.append(False)
+        # If working with faces
+        else:
+            if fsum < float(0) and labels[i] == 0:
+                accuracylist.append(True)
+            elif fsum >= float(0) and labels[i] == 1:
+                accuracylist.append(True)
+            else:
+                accuracylist.append(False)
+
+    accuracy_count = 0
+    for i in range(len(accuracylist)):
+        if accuracylist[i]:
+            accuracy_count += 1
+
+    accuracy = accuracy_count * 100 / len(accuracylist)
+    return accuracy
 
 
 def plotpoints(featureslist, labels_sample):
-
 
     for i in range(len(featureslist)):
         if labels_sample[i]:
@@ -205,85 +283,163 @@ def plotpoints(featureslist, labels_sample):
             plt.plot(featureslist[i][1], featureslist[i][2], 'rx')
 
 
+def run_digits_n_times(digit, iterations, sample_percentage, trainingpath, labelspath, n_images):
+
+    all_final_weights = []
+    all_final_accuracies = []
+    images = []
+    labels = []
+
+    '''
+            Load either digit training data or face training data
+    '''
+    if n_images == 5000:
+        images = samples.loadDataFile(trainingpath, n_images, 28, 28)
+        labels = samples.loadLabelsFile(labelspath, n_images)
+    elif n_images == 451:
+        images = samples.loadDataFile(trainingpath, n_images, 60, 70)
+        labels = samples.loadLabelsFile(labelspath, n_images)
+
+    '''
+            Wrap datum in Node object, store Node objects in a list, list index = datum/node's label
+    '''
+
+    '''
+    
+            Compute weights / run perceptron n times, where n = iterations parameter
+    
+    '''
+    for a in range(iterations):
+
+        # Functions_list = [pf.avg_horizontal_line_length, pf.variance_horizontal_line_length]
+        images_sample, labels_sample, visited = sample_digits(digit, sample_percentage, images, labels)
+
+
+        '''
+                !!!! SUBJECT TO CHANGE !!!
+        '''
+        # Featureslist = compute_features(functions_list, images_sample, typeflag)
+        featureslist = compute_features2(images_sample)
+        # Weights = initialize_weights(len(functions_list), 0)
+        weights = initialize_weights(28*28, 0)
+
+
+        '''
+                Run Perceptron
+        '''
+        start = time.time()
+        final_weights = compute_weights(weights, featureslist, labels_sample)
+        #print('time elapsed for compute_weights(): ' + str(time.time() - start) + ' seconds')
+
+        '''
+                Validate weights
+        '''
+        # Why was the first parameter 1???????? should be digit?? re run digits with digt instead of 1
+        accuracy = validate_weights(digit, final_weights)
+
+        '''
+                Record computed weights and accuracy for this training iteration
+        '''
+        all_final_weights.append(final_weights)
+        all_final_accuracies.append(accuracy)
+
+    '''
+            Record mean accuracy for all iterations
+    '''
+    accuracy_mean = sum(all_final_accuracies) / len(all_final_accuracies)
+
+    print('{0}              {1}              {2}'.format(digit, sample_percentage, accuracy_mean))
+
+    storagepath = './TrainingDigitsResults' + str(digit) +  '/' + str(sample_percentage) + '_percent_digit_train.txt'
+
+    with open(storagepath, 'w') as file:
+        for i in range(len(all_final_weights)):
+            for j in range(len(all_final_weights[i])):
+                file.write(str(all_final_weights[i][j]) + ' ')
+            file.write(str(all_final_accuracies[i]) + '%' + '\n')
+        file.write(str(accuracy_mean) + '%')
+        file.close()
+
+
+def sample_faces(sample_percentage, trainingpath, labelspath, n_images):
+    faces = samples.loadDataFile(trainingpath, 451, 60, 70)
+    labels = samples.loadLabelsFile(labelspath, 451)
+    joinedlists = list(zip(faces, labels))
+    random.shuffle(joinedlists)
+    faces, labels = zip(*joinedlists)
+    n_faces = int(float(sample_percentage) / float(100) * 451)
+
+    return faces[:n_faces], labels[:n_faces]
+
+
+def run_faces_n_times(iterations, sample_percentage, trainingpath, labelspath, n_images):
+
+    all_final_weights = []
+    all_final_accuracies = []
+
+    for i in range(iterations):
+
+        faces, labels = sample_faces(sample_percentage, trainingpath, labelspath, n_images)
+        convertedlabels = []
+        for q in range(len(labels)):
+            if labels[q] == 1:
+                convertedlabels.append(True)
+            else:
+                convertedlabels.append(False)
+
+        features_list = compute_features2(faces)
+        weights = initialize_weights(60*70, 0)
+
+        start = time.time()
+
+        final_weights = compute_weights(weights, features_list, convertedlabels)
+        #print(final_weights)
+        #print('compute_weights(), time elapsed: ' + str(time.time() - start) + ' seconds')
+        accuracy = validate_weights(-1, final_weights)
+
+        all_final_weights.append(final_weights)
+        all_final_accuracies.append(accuracy)
+
+    '''
+                Record mean accuracy for all iterations
+    '''
+    accuracy_mean = sum(all_final_accuracies) / len(all_final_accuracies)
+
+    print('{0}      {1}'.format(sample_percentage, accuracy_mean))
+
+    storagepath = './TrainFaceResults' + '/' + str(sample_percentage) + '_percent_face_train.txt'
+
+    with open(storagepath, 'w') as file:
+        for i in range(len(all_final_weights)):
+            for j in range(len(all_final_weights[i])):
+                file.write(str(all_final_weights[i][j]) + ' ')
+            file.write(str(all_final_accuracies[i]) + '%' + '\n')
+        file.write(str(accuracy_mean) + '%')
+        file.close()
+
 
 if __name__ == "__main__":
 
-    # Sample percentage being too low can incur an error, make sure to check how many image datums are being sampled
-    # The closer sample percentage is to 100, the more likely it is that sample_digits() will run infinitely
-    #   adjust later on so that it doesn't run infinitely
-    sample_percentage = .5
+    training_percent_cap = 100 # ie all of them, 10%, 20%, etc... 100%
+    iterations_per_sample = 10
+    '''
+    # Paths must always refer to the files in the data.zip archive
+    trainingpath = 'digitdata/trainingimages'
+    labelspath = 'digitdata/traininglabels'
     n_images = 5000
-    typeflag = 0
-
-    images = samples.loadDataFile('digitdata/trainingimages', n_images, 28, 28)
-    labels = samples.loadLabelsFile('digitdata/traininglabels', n_images)
-
-    functions_list = [pf.avg_horizontal_line_length, pf.variance_horizontal_line_length]
-    images_sample, labels_sample, visited = sample_digits(1, sample_percentage, images, labels)
-
-    featureslist = compute_features(functions_list, images_sample, typeflag)
-    weights = initialize_weights(len(functions_list), 0)
-
-
-
-
-    '''
-            ANIMATE GRAPH
+    
+    print('{0}      {1}     {2}'.format('Digit', 'Sample Percent', 'Mean Accuracy'))
+    
+    #for each digit 0 - 9 to train on
+    for z in range(0, 10):
+        # for each training percentage 10%, 20%, ... etc. to 100%
+        #for b in range(1, (training_percent_cap/10) + 1):
+            #run perceptron iterations_per_sample times
+        run_digits_n_times(z, 1, 100, trainingpath, labelspath, n_images)
     '''
 
-    #plotpoints(featureslist, labels_sample)
-    #plt.show()
 
-
-
-    '''
-            Run Perceptron
-    '''
-    final_weights = compute_weights(weights, featureslist, labels_sample)
-
-
-    print()
-    print()
-    print('==============================================')
-    print()
-    print('Final Weights: ', end="")
-    print(final_weights)
-    print()
-    print('==============================================')
-
-    print()
-
-    # check the weights on the same sample set to make sure its legit
-    print('     Checking final weights...')
-    print()
-
-    accuracylist = []
-
-    for i in range(len(images_sample)):
-        fsum = final_weights[0]
-
-        for j in range(0, len(functions_list)):
-            func = functions_list[j]
-            feature = func(images_sample[i], 0)
-            fsum += (feature * final_weights[j+1])
-
-        print('Image label at line ' + str(visited[i] + 1) + ': ' + str(labels_sample[i]) + ' --- ' + 'fsum: ' + str(fsum))
-        if fsum < float(0) and labels_sample[i] is False:
-            accuracylist.append(True)
-        elif fsum >= float(0) and labels_sample[i] is True:
-            accuracylist.append(True)
-        else:
-            accuracylist.append(False)
-
-    accuracy_count = 0
-    for i in range(len(accuracylist)):
-        if accuracylist[i]:
-            accuracy_count += 1
-
-
-    print()
-    accuracy = accuracy_count * 100 / len(accuracylist)
-    print('----- Accuracy: ' + str(accuracy) + '%' + ' ------')
-
+    for f in range(1, (training_percent_cap/10) + 1):
+        run_faces_n_times(iterations_per_sample, f*10, 'facedata/facedatatrain', 'facedata/facedatatrainlabels', 451)
 
 

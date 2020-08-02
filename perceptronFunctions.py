@@ -5,6 +5,9 @@
 
             ---------- ALL FUNCTION SIGNATURES MUST BE THE SAME --------------
 
+            *** WILL MOST LIKELY REMOVE THIS ENTIRE FILE AS ITS NOT LONGER NEEDED ***
+
+
                 - A list of features functions
 
                 - Perceptron algorithm stores these functions in a list
@@ -27,7 +30,7 @@ def hashtag_count(datum, typeflag):
         width = height = 28
     else:
         width = 60
-        height = 74
+        height = 70
     count = 0
     for i in range(height):
         for j in range(width):
@@ -46,7 +49,7 @@ def plus_count(datum, typeflag):
         width = height = 28
     else:
         width = 60
-        height = 74
+        height = 70
     count = 0
     for i in range(height):
         for j in range(width):
@@ -64,7 +67,7 @@ def space_count(datum, typeflag):
         width = height = 28
     else:
         width = 60
-        height = 74
+        height = 70
     count = 0
     for i in range(height):
         for j in range(width):
@@ -81,7 +84,7 @@ def ratio(datum, typeflag):
         width = height = 28
     else:
         width = 60
-        height = 74
+        height = 70
 
     blank_count = 0
     non_blank_count = 0
@@ -146,7 +149,7 @@ def avg_horizontal_line_length(datum, typeflag):
         width = height = 28
     else:
         width = 60
-        height = 74
+        height = 70
 
     # a list containing the lengths of all horizontal lines in the image
     # horizontal lines are just consecutive non-blank symbols in a row
@@ -176,7 +179,7 @@ def variance_horizontal_line_length(datum, typeflag):
         width = height = 28
     else:
         width = 60
-        height = 74
+        height = 70
 
     # a list containing the lengths of all horizontal lines in the image
     # horizontal lines are just consecutive non-blank symbols in a row
@@ -199,3 +202,44 @@ def variance_horizontal_line_length(datum, typeflag):
         squared_diffs += ((avg - line) * (avg - line))
 
     return squared_diffs/len(horizontal_lines)
+
+
+'''
+        For digit 0
+        Finds the area of holes (if there is more than 1 hole, the areas are added together)
+        
+
+def hole(datum, typeflag):
+    if typeflag == 0:
+        width = height = 28
+    else:
+        width = 60
+        height = 70
+
+    count = 0
+    horizontal_lines = []
+
+    for i in range(height):
+        for j in range(width):
+
+            # If this is the start of an edge
+            if datum.pixels[i][j] != 0:
+                # Traverse until a blank is reached
+                for k in range(j, width):
+                    if datum.pixles[i][k] != 0:
+                        continue
+                    else:
+
+
+
+        horizontal_lines.append(count)
+'''
+
+'''
+        For digit 0
+        Counts how many holes there are
+        
+'''
+
+
+
