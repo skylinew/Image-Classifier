@@ -12,7 +12,7 @@ def main(cats, percent):
         trainingdata = fileread.loadtraining(5000, 'digitdata/trainingimages', 'digitdata/traininglabels', 28, 28, cats, percent)
         features = Featuretable.FeatureTable(cats, 28, 28)
         features.filltable(trainingdata, cats)
-        features.printtable(cats)
+        #features.printtable(cats)
         validationdata = fileread.loadtest(1000, 'digitdata/testimages', 'digitdata/testlabels', 28, 28)
         validationprob = []
         results = []
@@ -65,10 +65,20 @@ def main(cats, percent):
         if validationdata[i].label == labelv:
             correctcount += 1
         totalcount += 1
-        print("Actual label: " + str(validationdata[i].label) + " Predicted label: " + str(
-            labelv) + " Probability: " + str(maxp))
-    print("Accuracy: " + str(correctcount / float(totalcount)))
+        #print("Actual label: " + str(validationdata[i].label) + " Predicted label: " + str(
+        #    labelv) + " Probability: " + str(maxp))
+    storagepath = './FaceResults/' + str(int(percent * 100)) + 'percent/result.txt'
+    f = open(storagepath, 'a')
+    f.write(str(correctcount / float(totalcount)) + ", ")
+    f.close()
+    #print("Accuracy: " + str(correctcount / float(totalcount)))
 
 
 if __name__ == "__main__":
-    main(2, 1)
+    for i in range(1, 11):
+        if i == 11:
+            for k in range(5):
+                main(2, 1)
+        else:
+            for j in range(5):
+                main(2, (.1 * i))
