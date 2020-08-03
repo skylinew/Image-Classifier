@@ -54,33 +54,9 @@ def loadtest(n, imageloc, labelloc, x, y):
     return digit_training_list
 
 
-
 def digitprob(training_list, number, percent):
     return len(training_list[number])/float(math.floor(percent * 5000))
 
+
 def faceprob(training_list, face, percent):
     return len(training_list[face])/float(math.floor(percent * 451))
-
-
-'''
-#training_labels_face = samples.loadLabelsFile('facedata/facedatatrainlabels', 451)
-#training_images_face = samples.loadDataFile('facedata/facedatatrain', len(training_labels_face), 60, 74)
-#face_training_list = []
-# Parsing FACES
-for ima, labl in zip(training_images_face, training_labels_face):
-    new = Node.node(ima.getPixels(), labl)
-    for i in range(len(new.image)):
-        for j in range(len(new.image[i])):
-            if new.image[i][j] == 0:
-                new.space += 1
-            elif new.image[i][j] == 1:
-                new.plus += 1
-            else:
-                new.hashtag += 1
-    new.ratio = new.space/float(new.plus + new.hashtag)
-    face_training_list.append(new)
-'''
-
-
-
-
