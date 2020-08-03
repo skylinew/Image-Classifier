@@ -6,10 +6,10 @@ import math
  # 10 for digits
  # 2 for faces
 
-def main(cats):
+def main(cats, percent):
     # trainingdata is a list of node objects
     if cats == 10:
-        trainingdata = fileread.loadtraining(5000, 'digitdata/trainingimages', 'digitdata/traininglabels', 28, 28, cats)
+        trainingdata = fileread.loadtraining(5000, 'digitdata/trainingimages', 'digitdata/traininglabels', 28, 28, cats, percent)
         features = Featuretable.FeatureTable(cats, 28, 28)
         features.filltable(trainingdata, cats)
         features.printtable(cats)
@@ -20,7 +20,7 @@ def main(cats):
             validationprob.append(0.0)
             results.append(0.0)
     else:
-        trainingdata = fileread.loadtraining(451, 'facedata/facedatatrain', 'facedata/facedatatrainlabels', 60, 70, cats)
+        trainingdata = fileread.loadtraining(451, 'facedata/facedatatrain', 'facedata/facedatatrainlabels', 60, 70, cats, percent)
         features = Featuretable.FeatureTable(cats, 60, 70)
         features.filltable(trainingdata, cats)
         validationdata = fileread.loadtest(150, 'facedata/facedatatest', 'facedata/facedatatestlabels', 60, 70)
@@ -35,9 +35,9 @@ def main(cats):
     for i in range(len(validationdata)):
         for q in range(cats):
             if cats == 10:
-                probability = math.log(fileread.digitprob(trainingdata, q))
+                probability = math.log(fileread.digitprob(trainingdata, q, percent))
             else:
-                probability = math.log(fileread.faceprob(trainingdata, q))
+                probability = math.log(fileread.faceprob(trainingdata, q, percent))
             for j in range(len(validationdata[i].image)):
                 for k in range(len(validationdata[i].image[j])):
                     if validationdata[i].image[j][k] == 0:
@@ -145,4 +145,4 @@ def main(cats):
 '''
 
 if __name__ == "__main__":
-    main(10)
+    main(2, 1)

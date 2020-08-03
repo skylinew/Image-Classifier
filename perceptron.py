@@ -350,7 +350,7 @@ def run_digits_n_times(digit, iterations, sample_percentage, trainingpath, label
 
     print('{0}              {1}              {2}'.format(digit, sample_percentage, accuracy_mean))
 
-    storagepath = './TrainingDigitsResults' + str(digit) +  '/' + str(sample_percentage) + '_percent_digit_train.txt'
+    storagepath = './TrainDigitsResults/TrainingDigitsResults' + str(digit) +  '/' + str(sample_percentage) + '_percent_digit_train.txt'
 
     with open(storagepath, 'w') as file:
         for i in range(len(all_final_weights)):
@@ -422,7 +422,7 @@ if __name__ == "__main__":
 
     training_percent_cap = 100 # ie all of them, 10%, 20%, etc... 100%
     iterations_per_sample = 10
-    '''
+
     # Paths must always refer to the files in the data.zip archive
     trainingpath = 'digitdata/trainingimages'
     labelspath = 'digitdata/traininglabels'
@@ -436,10 +436,10 @@ if __name__ == "__main__":
         #for b in range(1, (training_percent_cap/10) + 1):
             #run perceptron iterations_per_sample times
         run_digits_n_times(z, 1, 100, trainingpath, labelspath, n_images)
-    '''
 
 
+'''
     for f in range(1, (training_percent_cap/10) + 1):
         run_faces_n_times(iterations_per_sample, f*10, 'facedata/facedatatrain', 'facedata/facedatatrainlabels', 451)
-
+'''
 
