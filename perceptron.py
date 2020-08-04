@@ -634,6 +634,11 @@ def validate_digits120():
 
 
 
+def digit_overall_accuracies():
+    return
+
+
+
 if __name__ == "__main__":
 
 
@@ -683,5 +688,5 @@ if __name__ == "__main__":
     demo_digits(1000, demo_digit_data_path, demo_digit_labels_path)
     demo_faces(301, demo_faces_data_path, demo_faces_labels_path)
 
-    #validate_digits120()
+
 
