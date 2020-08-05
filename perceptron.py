@@ -530,9 +530,9 @@ def demo_digits(n_images, datapath, labelspath):
     for t in results:
         if t[0] == t[1]:
             correctcount += float(1)
-
+    print(results)
     print('Digits accuracy: ' + str(round((float(correctcount) * 100 / float(len(labels))), 1)) + '%')
-
+    print('Time elapsed: ' + str(round(time.time() - start, 2)) + 's')
 
 
 def demo_faces(n_images, datapath, labelspath):
@@ -564,8 +564,9 @@ def demo_faces(n_images, datapath, labelspath):
         elif t[0] < float(0) and t[1] == 0:
             correctcount += 1
 
+    print(results)
     print('Faces accuracy: ' + str(round((float(correctcount) * 100 / float(len(labels))), 1)) + '%')
-
+    print('Time elapsed: ' + str(round(time.time() - start, 2)) + 's')
 
 def validate_digits120():
     start = time.time()
@@ -633,9 +634,13 @@ def validate_digits120():
     print('Digits accuracy: ' + str(round((float(correctcount) * 100 / float(len(labels))), 1)) + '%')
 
 
+'''
+    For saving the overall times and accuracies per sample size
+'''
+def digits_overall():
 
-def digit_overall_accuracies():
-    return
+    for i in range(10):
+        demo_digits(1000, 'digitdata/validationimages', 'digitdata/validationlabels')
 
 
 
@@ -675,17 +680,21 @@ if __name__ == "__main__":
     demo_faces_data_path = 'facedata/facedatavalidation'
     demo_faces_labels_path = 'facedata/facedatavalidationlabels'
 
-    #demo_digit_data_path = 'digitdata/testimages'
-    #demo_digit_labels_path = 'digitdata/testlabels'
-    #demo_faces_data_path = 'facedata/facedatatest'
-    #demo_faces_labels_path = 'facedata/facedatatestlabels'
-
 
     '''
-            Current demos are set to run on validation data
-            Demo paths will change to commented paths during demo
+    demo_digit_data_path = 'digitdata/testimages'
+    demo_digit_labels_path = 'digitdata/testlabels'
+    demo_faces_data_path = 'facedata/facedatatest'
+    demo_faces_labels_path = 'facedata/facedatatestlabels'
+    '''
+
+
+    '''     - Change n_images parameter for test data
+            - Current demos are set to run on validation data
+            - Demo paths will change to test paths during demo
     '''
     demo_digits(1000, demo_digit_data_path, demo_digit_labels_path)
+    print()
     demo_faces(301, demo_faces_data_path, demo_faces_labels_path)
 
 
