@@ -2,6 +2,25 @@ import fileread
 import Featuretable
 import math
 import time
+import statistics
+
+
+def standard(percent):
+    f = open('./FaceResults/' + str(int(percent * 100)) + 'percent/result.txt', 'a+')
+    accuracy = []
+    line = f.readlines()
+    for eachline in line:
+        info = eachline.split(',')
+        c = [float(b) for b in info]
+        if len(c) == 1:
+            break
+        avg, dur = c
+        accuracy.append(dur)
+
+    stdev = statistics.stdev(accuracy)
+    f.write("\n" + str(stdev))
+    f.close()
+
 
  # cats is number of categories
  # 10 for digits
@@ -80,10 +99,12 @@ def main(cats, percent):
 
 
 if __name__ == "__main__":
+    #for i in range(1, 11):
+    #    if i == 11:
+    #        for k in range(10):
+    #            main(10, 1)
+    #    else:
+    #        for j in range(10):
+    #            main(10, (.1 * i))
     for i in range(1, 11):
-        if i == 11:
-            for k in range(10):
-                main(10, 1)
-        else:
-            for j in range(10):
-                main(10, (.1 * i))
+        standard(.1 * i)
