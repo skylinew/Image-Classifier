@@ -561,10 +561,7 @@ def demo_faces(n_images, datapath, labelspath, flag):
         for weight in range(len(weights)):
             sum += weights[weight] * featureslist[image][weight]
 
-        if sum >= float(0):
-            results.append((True, labels[image]))
-        else:
-            results.append((False, labels[image]))
+        results.append((sum, labels[image]))
 
     correctcount = 0
     for t in results:
@@ -576,7 +573,7 @@ def demo_faces(n_images, datapath, labelspath, flag):
     if flag:
         rand = random.randint(0, len(results))
         actual = False
-        if results[rand][1] == 1:
+        if results[rand][1] >= float(0):
             actual = True
         else:
             actual = False
