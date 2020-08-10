@@ -469,7 +469,7 @@ def choose_best_weights(file):
 
 
 
-def demo_digits(n_images, datapath, labelspath):
+def demo_digits(n_images, datapath, labelspath, flag):
 
     start = time.time()
 
@@ -523,19 +523,25 @@ def demo_digits(n_images, datapath, labelspath):
         #print(index, end=" --> ")
         #print(labels[image])
 
-        # Keep track of all guesses vs. labels in a tuples list (guess, label)
+        # Keep track of all guesses/index vs. labels in a tuples list (guess, label)
         results.append((index, labels[image]))
 
     correctcount = float(0)
     for t in results:
         if t[0] == t[1]:
             correctcount += float(1)
-    print(results)
-    print('Digits accuracy: ' + str(round((float(correctcount) * 100 / float(len(labels))), 1)) + '%')
-    print('Time elapsed: ' + str(round(time.time() - start, 2)) + 's')
 
 
-def demo_faces(n_images, datapath, labelspath):
+    if flag:
+        rand = random.randint(0, len(results))
+        print('Guessed: ' + str(results[rand][0]) + ', Actual: ' + str(results[rand][1]) + ' (line ' + str(rand) + ' of digit testlabel)')
+    else:
+        print(results)
+        print('Digits accuracy: ' + str(round((float(correctcount) * 100 / float(len(labels))), 1)) + '%')
+        print('Time elapsed: ' + str(round(time.time() - start, 2)) + 's')
+
+
+def demo_faces(n_images, datapath, labelspath, flag):
     start = time.time()
 
     base_path = './TrainFaceResults/100_percent_face_train.txt'
@@ -551,11 +557,14 @@ def demo_faces(n_images, datapath, labelspath):
     results = []
 
     for image in range(len(images)):
-        sum = 0
+        sum = float(0)
         for weight in range(len(weights)):
             sum += weights[weight] * featureslist[image][weight]
 
-        results.append((sum, labels[image]))
+        if sum >= float(0):
+            results.append((True, labels[image]))
+        else:
+            results.append((False, labels[image]))
 
     correctcount = 0
     for t in results:
@@ -564,9 +573,18 @@ def demo_faces(n_images, datapath, labelspath):
         elif t[0] < float(0) and t[1] == 0:
             correctcount += 1
 
-    print(results)
-    print('Faces accuracy: ' + str(round((float(correctcount) * 100 / float(len(labels))), 1)) + '%')
-    print('Time elapsed: ' + str(round(time.time() - start, 2)) + 's')
+    if flag:
+        rand = random.randint(0, len(results))
+        actual = False
+        if results[rand][1] == 1:
+            actual = True
+        else:
+            actual = False
+        print('Guessed: ' + str(results[rand][0]) + ', Actual: ' + str(actual) + ' (line ' + str(rand) + ' of face testlabel)')
+    else:
+        print(results)
+        print('Faces accuracy: ' + str(round((float(correctcount) * 100 / float(len(labels))), 1)) + '%')
+        print('Time elapsed: ' + str(round(time.time() - start, 2)) + 's')
 
 def validate_digits120():
     start = time.time()
@@ -693,9 +711,12 @@ if __name__ == "__main__":
             - Current demos are set to run on validation data
             - Demo paths will change to test paths during demo
     '''
-    demo_digits(1000, demo_digit_data_path, demo_digit_labels_path)
+    #flag = true means 1 image only, False means all images
+    print('Digits ~ ')
+    demo_digits(1000, demo_digit_data_path, demo_digit_labels_path, False)
     print()
-    demo_faces(301, demo_faces_data_path, demo_faces_labels_path)
+    print('Faces ~ ')
+    demo_faces(150, demo_faces_data_path, demo_faces_labels_path, False)
 
 
 

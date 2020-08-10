@@ -11,7 +11,36 @@ import statistics
 import math
 import random
 
+def demo_faces(weights):
+    n_images = 301
+    start = time.time()
 
+    data_path = 'facedata/facedatavalidation'
+    labels_path = 'facedata/facedatavalidationlabels'
+
+
+    images = samples.loadDataFile(data_path, n_images, 60, 70)
+    labels = samples.loadLabelsFile(labels_path, n_images)
+    featureslist = perceptron.compute_features2(images)
+
+    results = []
+
+    for image in range(len(images)):
+        sum = 0
+        for weight in range(len(weights)):
+            sum += weights[weight] * featureslist[image][weight]
+
+        results.append((sum, labels[image]))
+
+    correctcount = 0
+    for t in results:
+        if t[0] >= float(0) and t[1] == 1:
+            correctcount += 1
+        elif t[0] < float(0) and t[1] == 0:
+            correctcount += 1
+
+
+    return (float(correctcount) * 100 / float(len(labels)))
 
 def compute_weights(weights, featureslist, labels):
 
@@ -22,14 +51,14 @@ def compute_weights(weights, featureslist, labels):
     f = 0
     while True:
                                     # number indicates seconds to timeout at
-        if time.time() >= (start + 120):
+        if time.time() >= (start + 5):
             break
 
         fsum = float(0)
         for w in range(len(weights)):
 
             #print(fsum)
-            fsum += (float(weights[w]) * (0.01 * float(featureslist[f][w])))
+            fsum += (float(weights[w]) * (float(featureslist[f][w])))
 
         # Check if fsum is accurate by comparing it with its corresponding label
 
@@ -385,79 +414,71 @@ def get_digit_acc():
             demo_digits((k + 1)*10, allweights[k])
 
 
-def run_digits_n_times(sample_percentage):
-    all_final_weights = []
-    all_final_accuracies = []
-    images = []
-    labels = []
+def run_digits_n_times():
+
+    all_final_stddevs = []
+    all_final_accs = []
+
+    colors = ['r', 'b', 'g', 'orange', 'k', 'c', 'm', 'y', 'grey', 'pink']
+
+    fig = plt.figure()
+    ax1 = fig.add_subplot(111)
+    ax1.set_title('Face Training Runtimes')
 
     images = samples.loadDataFile('digitdata/trainingimages', 5000, 28, 28)
     labels = samples.loadLabelsFile('digitdata/traininglabels', 5000)
 
+    # For each percentage
+    for v in range(1, 11):
+        sample_percentage = v*10
+        acc_list = []
+        # For all 5 iterations
+        for j in range(0, 5):
 
-    for i in range(0, 10):
-        digit = i
-        images_sample, labels_sample, visited = perceptron.sample_digits(digit, sample_percentage, images, labels)
+            weights_vectors = []
+            # For each digit 0-9
+            for y in range(0, 10):
+                digit = y
+
+                images_sample, labels_sample, visited = perceptron.sample_digits(digit, sample_percentage, images, labels)
 
 
-        # Featureslist = compute_features(functions_list, images_sample, typeflag)
-        featureslist = perceptron.compute_features2(images_sample)
-        # Weights = initialize_weights(len(functions_list), 0)
-        weights = perceptron.initialize_weights(28 * 28, 0)
+                # Featureslist = compute_features(functions_list, images_sample, typeflag)
+                featureslist = perceptron.compute_features2(images_sample)
+                # Weights = initialize_weights(len(functions_list), 0)
+                weights = perceptron.initialize_weights(28 * 28, 0)
 
-        '''
-                Run Perceptron
-        '''
-        start = time.time()
-        final_weights = compute_weights(weights, featureslist, labels_sample)
-        elapsed = time.time() - start
+                '''
+                        Run Perceptron / Learn weights
+                '''
+                start = time.time()
+                final_weights = compute_weights(weights, featureslist, labels_sample)
+                elapsed = time.time() - start
+                weights_vectors.append(final_weights)
 
-        '''
-                Validate weights
-        '''
-        # Why was the first parameter 1???????? should be digit?? re run digits with digit instead of 1
-        accuracy = perceptron.validate_weights(digit, final_weights)
 
-        ###
-        print(str(digit) + ': ' + str(elapsed) + ' ~~ ' + 'sample percent: ' + str(sample_percentage) + ' ~~ ' + str(
-            accuracy) + '%')
-        basepath = './TrainingDigitsResults120/TrainingDigitsResults' + str(digit) + '/' + str(
-            sample_percentage) + '_percent.txt'
-        with open(basepath, 'w') as file:
-            for weight in range(len(weights)):
-                if weight == len(weights) - 1:
-                    file.write(str(weights[weight]) + '\n')
-                else:
-                    file.write(str(weights[weight]) + ' ')
-            file.write(str(round(elapsed, 2)) + 's' + ' ' + str(round(float(accuracy) / float(100), 2)))
+            # Test all weights (weight vectors 0-9), add acc to acc list
+            acc = demo_digits(weights_vectors)
+            acc_list.append(acc)
 
-        '''
-                Record computed weights and accuracy for this training iteration
-        '''
-        all_final_weights.append(final_weights)
-        all_final_accuracies.append(accuracy)
 
-    '''
-            Record mean accuracy for all iterations
-    '''
+        # For percentage sample size v, get the mean accuracy and standard deviation accuracy
+        mean = statistics.mean(acc_list)
+        stddev = statistics.stdev(acc_list)
+        print('Mean accuracy for sample percent-' + str(v) + ' ~ ' + str(mean))
+        print('STD Dev for sample percent-' + str(v) + ' ~ ' + str(stddev))
 
-    '''
-    accuracy_mean = sum(all_final_accuracies) / len(all_final_accuracies)
+        all_final_stddevs.append(stddev)
+        all_final_accs.append(mean)
 
-    print('{0}              {1}              {2}'.format(digit, sample_percentage, accuracy_mean))
-
-    storagepath = './TrainDigitsResults/TrainingDigitsResults' + str(digit) +  '/' + str(sample_percentage) + '_percent_digit_train.txt'
-
-    with open(storagepath, 'w') as file:
-        for i in range(len(all_final_weights)):
-            for j in range(len(all_final_weights[i])):
-                file.write(str(all_final_weights[i][j]) + ' ')
-            file.write(str(all_final_accuracies[i]) + '%' + '\n')
-        file.write(str(accuracy_mean) + '%')
-        file.close()
-
-    '''
-
+    print(stddev)
+    ax1.plot([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], all_final_accs, color='blue', marker='.', linestyle='--')
+    #ax1.plot([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], all_final_stddevs, color='red',marker='.', linestyle='--')
+    plt.xticks([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], ['10%', '20%', '30%', '40%', '50%', '60%', '70%', '80%', '90%', '100%'])
+    plt.xlabel('Training Data Sample Size')
+    plt.ylabel('Standard Deviation of Accuracies')
+    # plt.legend(loc='lower right', title='Face Train Runtime');
+    plt.show()
 
 
 
@@ -538,7 +559,69 @@ def get_digit_acc2():
         print(str((i + 1) * 10) + ' ' + str(elapsed) + ' ' + str(acc))
 
 
+def graph_digit_acc_dev():
+    lines = []
+    with open('./PercepDigitSampleSizesAccuracy/final_digit_acc_dev.txt', 'r') as f:
+        lines = f.readlines()
+        f.close()
 
+
+    stddevs = []
+    accs = []
+    for l in range(len(lines)):
+        line = lines[l]
+        tokens = line.split()
+        if 'Mean' in tokens:
+            accs.append(float(tokens[-1]))
+        elif 'STD' in tokens:
+            stddevs.append(float(tokens[-1]))
+
+    print('----')
+    print(stddevs)
+
+
+def face_dev():
+
+    stddevs = []
+    # For each percentage
+    for v in range(1, 11):
+        sample_percentage = v * 10
+        acc_list = []
+
+        # for all 10 iterations
+        for j in range(0, 10):
+
+            images_sample, labels_sample = perceptron.sample_faces(sample_percentage,'facedata/facedatatrain', 'facedata/facedatatrainlabels' , 451)
+            featureslist = perceptron.compute_features2(images_sample)
+
+            converted_labels = []
+            for t in range(len(labels_sample)):
+                if labels_sample[t] == 1:
+                    converted_labels.append(True)
+                else:
+                    converted_labels.append(False)
+
+            # Weights = initialize_weights(len(functions_list), 0)
+            weights = perceptron.initialize_weights(60 * 70, 0)
+            '''
+                    Run Perceptron / Learn weights
+            '''
+            start = time.time()
+            final_weights = perceptron.compute_weights(weights, featureslist, converted_labels)
+            elapsed = time.time() - start
+
+
+            # Test all weights (weight vectors 0-9), add acc to acc list
+            acc = demo_faces(final_weights)
+            acc_list.append(acc)
+            print(acc)
+
+
+        stddev = statistics.stdev(acc_list)
+        stddevs.append(round(stddev, 2))
+
+
+    print(stddevs)
 
 
 def graph_digit_acc():
@@ -574,7 +657,6 @@ def graph_digit_acc():
 
 
 
-
 if __name__ == "__main__":
     #graph_face_results()
     #graph_digit_results()
@@ -589,5 +671,5 @@ if __name__ == "__main__":
     #graph_digit_acc()
     #get_digit_acc2()
 
-    for i in range(1, 11):
-        run_digits_n_times(i*10)
+
+    face_dev()
