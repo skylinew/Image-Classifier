@@ -15,16 +15,17 @@ class FeatureTable:
                         self.table[i][z][t].append(0.0)
 
     def filltable(self, trainingdata, cats):
+        laplace = 5
         for i in range(cats):
             for z in range(len(trainingdata[i])):
                 for j in range(len(self.table[i])):
                     for k in range(len(self.table[i][j])):
                         if trainingdata[i][z].image[j][k] == 0:
-                            self.table[i][j][k][0] += (1 + 5)/(float(len(trainingdata[i])) + 5)
+                            self.table[i][j][k][0] += (1 + laplace)/(float(len(trainingdata[i])) + laplace)
                         elif trainingdata[i][z].image[j][k] == 1:
-                            self.table[i][j][k][1] += (1 + 5)/(float(len(trainingdata[i])) + 5)
+                            self.table[i][j][k][1] += (1 + laplace)/(float(len(trainingdata[i])) + laplace)
                         else:
-                            self.table[i][j][k][2] += (1 + 5)/(float(len(trainingdata[i])) + 5)
+                            self.table[i][j][k][2] += (1 + laplace)/(float(len(trainingdata[i])) + laplace)
 
     def printtable(self, cats):
         for i in range(cats):

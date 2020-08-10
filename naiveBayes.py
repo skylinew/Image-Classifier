@@ -2,7 +2,8 @@ import fileread
 import Featuretable
 import math
 import time
-import statistics
+import random
+#import statistics
 
 
 def standard(percent):
@@ -56,7 +57,13 @@ def main(cats, percent):
 
     correctcount = 0
     totalcount = 0
+    democount = 0
     for i in range(len(validationdata)):
+        #democount += 1
+        #if democount == 2:
+        #    break
+        #i = random.randrange(len(validationdata))
+
         for q in range(cats):
             if cats == 10:
                 probability = math.log(fileread.digitprob(trainingdata, q, percent))
@@ -89,16 +96,17 @@ def main(cats, percent):
         if validationdata[i].label == labelv:
             correctcount += 1
         totalcount += 1
-        #print("Actual label: " + str(validationdata[i].label) + " Predicted label: " + str(
-        #    labelv) + " Probability: " + str(maxp))
-    storagepath = './DigitResults/' + str(int(percent * 100)) + 'percent/result.txt'
-    f = open(storagepath, 'a')
-    f.write(str(correctcount/float(totalcount)) + "," + str(finish) + "\n")
-    f.close()
-    #print("Accuracy: " + str(correctcount / float(totalcount)))
+        print("Actual label: " + str(validationdata[i].label) + " Predicted label: " + str(
+            labelv) + " Probability: " + str(maxp))
+    #storagepath = './DigitResults/' + str(int(percent * 100)) + 'percent/result.txt'
+    #f = open(storagepath, 'a')
+    #f.write(str(correctcount/float(totalcount)) + "," + str(finish) + "\n")
+    #f.close()
+    print("Accuracy: " + str(correctcount / float(totalcount)))
 
 
 if __name__ == "__main__":
+    main(10, 1)
     #for i in range(1, 11):
     #    if i == 11:
     #        for k in range(10):
@@ -106,5 +114,5 @@ if __name__ == "__main__":
     #    else:
     #        for j in range(10):
     #            main(10, (.1 * i))
-    for i in range(1, 11):
-        standard(.1 * i)
+    #for i in range(1, 11):
+    #    standard(.1 * i)
