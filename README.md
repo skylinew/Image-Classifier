@@ -1,5 +1,5 @@
 # Image Classifer
-A face and digit image (preprocessed) detector implemented with both[Naive Bayes](**https://en.wikipedia.org/wiki/Naive_Bayes_classifier**) and [Perceptron](**https://en.wikipedia.org/wiki/Perceptron**) algorithms.
+A face and digit image (preprocessed) detector implemented with [Naive Bayes](**https://en.wikipedia.org/wiki/Naive_Bayes_classifier**) and [Perceptron](**https://en.wikipedia.org/wiki/Perceptron**) algorithms.
 
 
 ## Usage
